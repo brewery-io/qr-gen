@@ -39,7 +39,7 @@ def breakUpAndPad(info):
 	info["pad_bytes"] = pad_bytes
 	info["byte_string"] = byte_string
 
-	
+
 
 def encodeAlphanumeric(info):
 
@@ -135,16 +135,20 @@ def determineSmallestVersionForData(info):
 
 	addIndicators(info)
 
-def error(error_message):
+def error(error_message, error_code):
 
 	print error_message
-	exit(1)
+	exit(error_code)
 
 def usage():
 
-	print "this is not how you use this util"
+	error("This is not how you use this util", 2)
 
 def main(argv):
+
+	error_correction_level = False
+	encoding_mode = False
+	text = False
 
 	try:
 		opts, args = getopt(argv, "e:m:t:", ["error=", "mode=", "text="])
@@ -168,9 +172,11 @@ def main(argv):
 
 			determineSmallestVersionForData(info)
 
+		else:
+			usage()
+
 	except GetoptError:
 		usage()
-		exit(2)
 
 if __name__ == "__main__":
 	main(argv[1:])
