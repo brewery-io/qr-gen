@@ -3,6 +3,43 @@ from getopt import getopt, GetoptError
 
 import data_maps
 
+def errorCorrect(info):
+
+	groups = [[], []]
+
+	block_map = data_maps.blockMap()
+
+	byte_array = list(info["byte_array"])
+
+	blocks_in_group_1 = block_map["%s-%s" % (info["version"], info["error_correction_level"])][2]
+	blocks_in_group_2 = block_map["%s-%s" % (info["version"], info["error_correction_level"])][4]
+
+	for i in range(blocks_in_group_1):
+		groups[0].append([])
+	for i in range(blocks_in_group_2):
+		groups[1].append([])
+
+	codewords_in_group_1_block = block_map["%s-%s" % (info["version"], info["error_correction_level"])][3]
+	codewords_in_group_2_block = block_map["%s-%s" % (info["version"], info["error_correction_level"])][5]
+
+	for block in groups[0]:
+		for i in range(codewords_in_group_1_block):
+			block.append(byte_array[0])
+			del(byte_array[0])
+
+
+	for block in groups[1]:
+		for i in range(codewords_in_group_2_block):
+			block.append(byte_array[0])
+			del(byte_array[0])
+
+	for byte in info["byte_array"]:
+		print int(byte, 2)
+
+def splitIntoBytes(string_of_bytes):
+
+	return [string_of_bytes[start:start + 8] for start in range(0, len(string_of_bytes), 8)]
+
 def breakUpAndPad(info):
 
 	block_map = data_maps.blockMap()
@@ -38,8 +75,9 @@ def breakUpAndPad(info):
 
 	info["pad_bytes"] = pad_bytes
 	info["byte_string"] = byte_string
+	info["byte_array"] = splitIntoBytes(byte_string)
 
-
+	errorCorrect(info)
 
 def encodeAlphanumeric(info):
 
@@ -147,7 +185,7 @@ def usage():
 def main(argv):
 
 	error_correction_level = False
-	encoding_mode = False
+	encoding_mode_name = False
 	text = False
 
 	try:
@@ -156,18 +194,28 @@ def main(argv):
 			if opt[0] == "-e":
 				error_correction_level = opt[1]
 			elif opt[0] == "-m":
-				encoding_mode = int(opt[1])
+				encoding_mode_name = opt[1]
 			elif opt[0] == "-t":
 				text = opt[1]
 
 		#To Do: better checking for correct args
 
-		if error_correction_level and encoding_mode and text:
+		if error_correction_level and encoding_mode_name and text:
+
+			encoding_modes = {
+				"numeric": 0,
+				"alphanumeric": 1,
+				"byte": 2,
+				"kanji": 3
+			}
+
+			encoding_mode = encoding_modes[encoding_mode_name]
 
 			info = {
 				"error_correction_level": error_correction_level,
 				"encoding_mode": encoding_mode,
-				"text": text
+				"text": text,
+				"encoding_mode_name": encoding_mode_name
 			}
 
 			determineSmallestVersionForData(info)
@@ -180,3 +228,5 @@ def main(argv):
 
 if __name__ == "__main__":
 	main(argv[1:])
+
+"""0YOD1QR8HVWHRSDLD2EX6CSCIXHDSDXUHHAAXCVPL599UQFEGB4V252Y8CHHHFKLYXI3M0WM3USBJE4U1234567"""
