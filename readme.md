@@ -4,6 +4,11 @@ QR Code Generator is an open source library for encoding strings and numerics in
 
 It is currently in development. It will be available as an API which will take in strings/numerics and return an object of bits representing the QR code.
 
+### Done:
+
+* Data analysis (if you consider this a step)
+* Data encoding
+
 ### To do:
 
 * Error correction coding
